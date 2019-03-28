@@ -1,9 +1,47 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
+import { shallow } from 'enzyme';
 import App from './App';
+import PlayersList from './components/PlayersList/PlayersList';
+import AddPlayer from './components/AddPlayer/AddPlayer';
 
 it('renders without crashing', () => {
-  const div = document.createElement('div');
-  ReactDOM.render(<App />, div);
-  ReactDOM.unmountComponentAtNode(div);
+	shallow(<App />);
+});
+
+it('should update player score', () => {
+	const appComponent = shallow(<App />);
+
+	const players = [
+		{
+			name: 'player1',
+			score: 3
+		}
+	]
+
+	appComponent.setState({ players });
+
+	const onScoreUpdate = appComponent.find(PlayersList).prop('onScoreUpdate');
+
+	onScoreUpdate(0, 5);
+
+	const playersAfterUpdate = appComponent.state().players;
+
+	playersAfterUpdate[0].score;
+
+	expect(playersAfterUpdate[0].score).toEqual(8);
+
+});
+
+it('add new player', () => {
+
+	const appComponent = shallow(<App />);
+
+	const onPlayerAdd = appComponent.find(AddPlayer).prop('onPlayerAdd');
+	onPlayerAdd('Ania');
+
+	const players = appComponent.state('players');
+
+	expect(players.length).toEqual(3);
+	expect(players[2].name).toEqual('Ania');
+	expect(players[2].score).toEqual(0);
 });
